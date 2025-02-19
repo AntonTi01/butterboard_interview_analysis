@@ -133,3 +133,15 @@ dmypy.json
 
 *.log
 *.bak
+
+# Игнорируем все MP3-файлы в data/
+data/*.mp3
+
+# Игнорируем все .docx и .srt файлы в results/raw и results/postprocessed
+results/raw/*.docx
+results/raw/*.srt
+results/postprocessed/*.docx
+results/postprocessed/*.srt
+# Игнорируем все модели
+models/
+

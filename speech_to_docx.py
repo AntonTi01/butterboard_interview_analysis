@@ -16,9 +16,11 @@ from asr.asr import initialize_model_for_speech_segmentation
 from asr.asr import transcribe, check_language
 from asr.asr import asr_logger
 from utils.utils import time_to_str
+from postprocessing import process_transcription_file
 
 
 speech_to_srt_logger = logging.getLogger(__name__)
+
 
 
 def main():
@@ -151,6 +153,20 @@ def main():
         doc.add_paragraph('')
     doc.save(output_docx_fname)
 
+    raw_dir = os.path.dirname(output_docx_fname)
+    postprocessed_dir = raw_dir.replace("raw", "postprocessed", 1)
+    base_name = os.path.basename(output_docx_fname)
+    name_part, ext_part = os.path.splitext(base_name)
+    cleaned_name = f"{name_part}_cleaned{ext_part}"
+    postprocessed_docx_fname = os.path.join(postprocessed_dir, cleaned_name)
+    os.makedirs(os.path.dirname(postprocessed_docx_fname), exist_ok=True)
+
+    try:
+        process_transcription_file(output_docx_fname, postprocessed_docx_fname)
+        speech_to_srt_logger.info(f"Cleaned document saved to: {postprocessed_docx_fname}")
+    except Exception as e:
+        speech_to_srt_logger.error(f"Postprocessing failed: {str(e)}")
+        raise
 
 if __name__ == '__main__':
     speech_to_srt_logger.setLevel(logging.INFO)
