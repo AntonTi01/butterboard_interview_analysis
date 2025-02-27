@@ -33,3 +33,8 @@ def download_diarization_models():
         local_dir=f"{MODEL_DIR}/speaker-diarization-3.1",
         use_auth_token=HUGGINGFACE_TOKEN
     )
+    snapshot_download(
+        repo_id="pyannote/segmentation-3.0",
+        local_dir=f"{MODEL_DIR}/segmentation-3.0",
+        use_auth_token=HUGGINGFACE_TOKEN
+    )
