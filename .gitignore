@@ -136,6 +136,7 @@ dmypy.json
 
 # Игнорируем все MP3-файлы в data/
 data/*.mp3
+data/*.wav
 
 # Игнорируем все .docx и .srt файлы в results/raw и results/postprocessed
 results/raw/*.docx
@@ -144,4 +145,3 @@ results/postprocessed/*.docx
 results/postprocessed/*.srt
 # Игнорируем все модели
 models/
-

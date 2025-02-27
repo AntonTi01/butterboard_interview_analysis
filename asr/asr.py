@@ -196,16 +196,15 @@ def initialize_model_for_speech_segmentation(language: str = 'ru', model_info: O
         else:
             model_name = 'jonatasgrosman/wav2vec2-large-xlsr-53-english'
     try:
+        device = "cpu"
         if torch.cuda.is_available():
-            segmenter = pipeline(
-                'automatic-speech-recognition', model=model_name,
-                chunk_length_s=10, stride_length_s=(4, 2), device='cuda:0'
-            )
-        else:
-            segmenter = pipeline(
-                'automatic-speech-recognition', model=model_name,
-                chunk_length_s=10, stride_length_s=(4, 2)
-            )
+            device = "cuda:0"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+
+        segmenter = pipeline(
+            'automatic-speech-recognition', model=model_name,
+            chunk_length_s=10, stride_length_s=(4, 2), device=device)
     except Exception as err:
         asr_logger.error(str(err))
         raise
@@ -244,14 +243,13 @@ def initialize_model_for_speech_classification(model_info: Optional[str] = None)
     else:
         model_name = 'MIT/ast-finetuned-audioset-10-10-0.4593'
     try:
+        device = "cpu"
         if torch.cuda.is_available():
-            classifier = pipeline(
-                'audio-classification', model=model_name, device='cuda:0'
-            )
-        else:
-            classifier = pipeline(
-                'audio-classification', model=model_name
-            )
+            device = "cuda:0"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        classifier = pipeline(
+            'audio-classification', model=model_name, device=device)
     except Exception as err:
         asr_logger.error(str(err))
         raise
@@ -288,17 +286,17 @@ def initialize_model_for_speech_recognition(language: str = 'ru', model_info: Op
         else:
             model_name = 'openai/whisper-large-v3'
     try:
+        device = "cpu"
         if torch.cuda.is_available():
-            recognizer = pipeline(
-                'automatic-speech-recognition', model=model_name,
-                chunk_length_s=20, stride_length_s=(4, 2),
-                device='cuda:0', model_kwargs={'attn_implementation': 'sdpa'}, torch_dtype=torch.float16
+            device = "cuda:0"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        recognizer = pipeline(
+            'automatic-speech-recognition', model=model_name,
+            chunk_length_s=20, stride_length_s=(4, 2),
+            device=device, model_kwargs={'attn_implementation': 'sdpa'}, torch_dtype=torch.float16 if device == "cuda:0" else torch.float32
             )
-        else:
-            recognizer = pipeline(
-                'automatic-speech-recognition', model=model_name,
-                chunk_length_s=20, stride_length_s=(4, 2)
-            )
+        
     except Exception as err:
         asr_logger.error(str(err))
         raise

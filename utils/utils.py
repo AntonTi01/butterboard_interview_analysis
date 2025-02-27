@@ -1,4 +1,6 @@
 import math
+from huggingface_hub import snapshot_download
+from config import HUGGINGFACE_TOKEN, MODEL_DIR
 
 
 def time_to_str(time_val: float) -> str:
@@ -24,3 +26,10 @@ def time_to_str(time_val: float) -> str:
     s += ':'
     s += ('{0:06.3f}'.format(time_val)).replace('.', ',')
     return s
+
+def download_diarization_models():
+    snapshot_download(
+        repo_id="pyannote/speaker-diarization-3.1",
+        local_dir=f"{MODEL_DIR}/speaker-diarization-3.1",
+        use_auth_token=HUGGINGFACE_TOKEN
+    )

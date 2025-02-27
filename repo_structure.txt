@@ -1,0 +1,122 @@
+.
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── asr
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-39.pyc
+│   │   └── asr.cpython-39.pyc
+│   └── asr.py
+├── client_ru_demo.py
+├── data
+│   ├── interview.mp3
+│   └── interview_2.mp3
+├── download_models.py
+├── models
+│   └── ru
+│       ├── ast
+│       │   ├── README.md
+│       │   ├── config.json
+│       │   ├── model.safetensors
+│       │   ├── preprocessor_config.json
+│       │   └── pytorch_model.bin
+│       ├── wav2vec2
+│       │   ├── README.md
+│       │   ├── config.json
+│       │   ├── preprocessor_config.json
+│       │   ├── pytorch_model.bin
+│       │   ├── special_tokens_map.json
+│       │   ├── test_sound_ru.flac
+│       │   ├── tokenizer_config.json
+│       │   └── vocab.json
+│       └── whisper
+│           ├── README.md
+│           ├── anna_matveeva_test.wav
+│           ├── config.json
+│           ├── generation_config.json
+│           ├── merges.txt
+│           ├── model-00001-of-00002.safetensors
+│           ├── model-00002-of-00002.safetensors
+│           ├── model.safetensors.index.json
+│           ├── normalizer.json
+│           ├── preprocessor_config.json
+│           ├── pytorch_model-00001-of-00002.bin
+│           ├── pytorch_model-00002-of-00002.bin
+│           ├── pytorch_model.bin.index.json
+│           ├── special_tokens_map.json
+│           ├── test_sound_ru.flac
+│           ├── test_sound_with_noise.wav
+│           ├── tokenizer.json
+│           ├── tokenizer_config.json
+│           └── vocab.json
+├── postprocessing.py
+├── repo_structure.txt
+├── requirements.txt
+├── results
+│   ├── postprocessed
+│   │   ├── interview_1_cleaned.docx
+│   │   └── interview_2_cleaned.docx
+│   └── raw
+│       ├── interview_1.docx
+│       └── interview_2.docx
+├── server_ru.py
+├── speech_to_docx.py
+├── speech_to_srt.py
+├── tests
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-39.pyc
+│   │   ├── test_asr.cpython-39.pyc
+│   │   ├── test_asr_en.cpython-39.pyc
+│   │   ├── test_asr_ru.cpython-39.pyc
+│   │   ├── test_utils.cpython-39.pyc
+│   │   ├── test_vad.cpython-39.pyc
+│   │   └── test_wav_io.cpython-39.pyc
+│   ├── test_asr.py
+│   ├── test_asr_en.py
+│   ├── test_asr_ru.py
+│   ├── test_utils.py
+│   ├── test_vad.py
+│   ├── test_wav_io.py
+│   └── testdata
+│       ├── empty_mono.wav
+│       ├── incorrect_sampling_freq.wav
+│       ├── model_en
+│       │   ├── ast
+│       │   ├── wav2vec2
+│       │   └── whisper
+│       ├── model_ru
+│       │   ├── ast
+│       │   ├── wav2vec2
+│       │   └── whisper
+│       ├── mono_sound.wav
+│       ├── notsound.wav
+│       ├── silence.wav
+│       ├── stereo_sound.wav
+│       ├── test_mpeg.m4a
+│       ├── test_silence.wav
+│       ├── test_sound_en.wav
+│       ├── test_sound_ru.wav
+│       ├── test_wav_from_mpeg.wav
+│       └── unknown_sound
+├── utils
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-39.pyc
+│   │   └── utils.cpython-39.pyc
+│   └── utils.py
+├── vad
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-39.pyc
+│   │   └── vad.cpython-39.pyc
+│   └── vad.py
+└── wav_io
+    ├── __init__.py
+    ├── __pycache__
+    │   ├── __init__.cpython-39.pyc
+    │   └── wav_io.cpython-39.pyc
+    └── wav_io.py
+
+29 directories, 91 files
