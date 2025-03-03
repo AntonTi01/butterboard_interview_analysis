@@ -6,6 +6,12 @@ from speech_to_docx import perform_transcribation
 from diarization import perform_diarization
 from postprocessing import process_transcription_file
 
+import torch
+print(torch.version.cuda)
+print(torch.backends.cudnn.version())
+print(torch.__version__)
+
+
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
