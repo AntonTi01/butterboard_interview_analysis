@@ -3,7 +3,7 @@ import argparse
 import torch
 import tempfile
 from config import HUGGINGFACE_TOKEN, MODEL_DIR
-from utils.utils import download_diarization_models
+from utils.utils import download_diarization_models, get_device
 from pyannote.audio import Pipeline
 from wav_io.wav_io import transform_to_wavpcm, load_sound
 
@@ -20,19 +20,6 @@ def check_and_download_models():
             break
     print("Все модели на месте.")
 
-# Определение устройства (CUDA, MPS, CPU)
-def get_device():
-    if torch.cuda.is_available():
-        device = "cuda"
-        print("Используется GPU (CUDA)")
-    elif torch.backends.mps.is_available():
-        device = "mps"
-        print("Используется GPU на Mac (MPS)")
-    else:
-        device = "cpu"
-        print("Используется CPU")
-    
-    return device
 
 def perform_diarization(input_audio, output_txt):
     print(f"Обрабатываем файл: {input_audio}")

@@ -1,6 +1,7 @@
 import math
 from huggingface_hub import snapshot_download
 from config import HUGGINGFACE_TOKEN, MODEL_DIR
+import torch
 
 
 def time_to_str(time_val: float) -> str:
@@ -38,3 +39,15 @@ def download_diarization_models():
         local_dir=f"{MODEL_DIR}/segmentation-3.0",
         use_auth_token=HUGGINGFACE_TOKEN
     )
+
+# Определение устройства (CUDA, MPS, CPU)
+def get_device():
+    if torch.cuda.is_available():
+        device = "cuda"
+        print("Используется GPU (CUDA)")
+    elif torch.backends.mps.is_available():
+        device = "mps"
+        print("Используется GPU на Mac (MPS)")
+    else:
+        device = "cpu"
+        print("Используется CPU")
