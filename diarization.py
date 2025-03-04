@@ -51,7 +51,7 @@ def perform_diarization(input_audio, output_txt):
         raise RuntimeError(f"Ошибка загрузки {wav_audio_path}: {str(e)}")
 
     config_path = os.path.join(MODEL_DIR, "speaker-diarization-3.1", "config.yaml")
-    pipeline = Pipeline.from_pretrained(config_path).to(device)
+    pipeline = Pipeline.from_pretrained(config_path).to(torch.device(device))
 
     diarization_result = pipeline({"uri": "interview", "audio": wav_audio_path})
 
