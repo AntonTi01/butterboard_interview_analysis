@@ -4,7 +4,7 @@ import argparse
 import logging
 from speech_to_docx import perform_transcribation
 from diarization import perform_diarization
-from postprocessing import process_transcription_file
+from utils.postprocessing import process_transcription_file, process_speaker_segments, convert_diarization_file
 
 import torch
 print(torch.version.cuda)
@@ -48,9 +48,23 @@ def main(input_audio, model_path, enable_diarization, enable_postprocessing):
 
     # 2. Опционально: Диаризация
     if enable_diarization:
-        logger.info("Этап 2: Диаризация...")
+        logger.info("Этап 2.1: Диаризация...")
         perform_diarization(input_audio, diarization_output)
-        logger.info(f"Результат диаризации сохранён в {diarization_output}")
+
+        # Устанавливаем путь для объединённого файла
+        diarization_output_merged = os.path.join(diarization_dir, f"{base_name}_diarization_merged.txt")
+        
+        logger.info("Этап 2.2: Объединение сегментов")
+        process_speaker_segments(diarization_output, diarization_output_merged)
+
+        # Устанавливаем путь для окончательно обработанного файла
+        diarization_output_processed = os.path.join(diarization_dir, f"{base_name}_diarization_processed.txt")
+        
+        logger.info("Этап 2.3: Преобразование времени")
+        convert_diarization_file(diarization_output_merged, diarization_output_processed)
+
+        logger.info(f"Результат диаризации сохранён в {diarization_output_processed}")
+
 
     # 3. Опционально: Постобработка
     if enable_postprocessing:
