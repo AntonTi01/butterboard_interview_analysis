@@ -41,13 +41,9 @@ def download_diarization_models():
     )
 
 # Определение устройства (CUDA, MPS, CPU)
-def get_device():
+def get_device() -> str:
     if torch.cuda.is_available():
-        device = "cuda"
-        print("Используется GPU (CUDA)")
+        return "cuda:0"
     elif torch.backends.mps.is_available():
-        device = "mps"
-        print("Используется GPU на Mac (MPS)")
-    else:
-        device = "cpu"
-        print("Используется CPU")
+        return "mps"
+    return "cpu"

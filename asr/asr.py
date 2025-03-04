@@ -9,7 +9,7 @@ from tqdm import tqdm
 import torch
 from transformers import pipeline, Pipeline
 
-from utils.utils import time_to_str
+from utils.utils import time_to_str, get_device
 from wav_io.wav_io import TARGET_SAMPLING_FREQUENCY
 
 
@@ -196,11 +196,8 @@ def initialize_model_for_speech_segmentation(language: str = 'ru', model_info: O
         else:
             model_name = 'jonatasgrosman/wav2vec2-large-xlsr-53-english'
     try:
-        device = "cpu"
-        if torch.cuda.is_available():
-            device = "cuda:0"
-        elif torch.backends.mps.is_available():
-            device = "mps"
+        device = get_device()
+        print(f"Используется устройство: {device}")
 
         segmenter = pipeline(
             'automatic-speech-recognition', model=model_name,
@@ -243,11 +240,9 @@ def initialize_model_for_speech_classification(model_info: Optional[str] = None)
     else:
         model_name = 'MIT/ast-finetuned-audioset-10-10-0.4593'
     try:
-        device = "cpu"
-        if torch.cuda.is_available():
-            device = "cuda:0"
-        elif torch.backends.mps.is_available():
-            device = "mps"
+        device = get_device()
+        print(f"Используется устройство: {device}")
+
         classifier = pipeline(
             'audio-classification', model=model_name, device=device)
     except Exception as err:
@@ -286,11 +281,9 @@ def initialize_model_for_speech_recognition(language: str = 'ru', model_info: Op
         else:
             model_name = 'openai/whisper-large-v3'
     try:
-        device = "cpu"
-        if torch.cuda.is_available():
-            device = "cuda:0"
-        elif torch.backends.mps.is_available():
-            device = "mps"
+        device = get_device()
+        print(f"Используется устройство: {device}")
+
         recognizer = pipeline(
             'automatic-speech-recognition', model=model_name,
             chunk_length_s=20, stride_length_s=(4, 2),
