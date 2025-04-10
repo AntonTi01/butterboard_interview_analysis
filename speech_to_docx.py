@@ -16,7 +16,6 @@ from asr.asr import initialize_model_for_speech_segmentation
 from asr.asr import transcribe, check_language
 from asr.asr import asr_logger
 from utils.utils import time_to_str
-from utils.postprocessing import process_transcription_file
 
 
 speech_to_srt_logger = logging.getLogger(__name__)

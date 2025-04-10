@@ -31,9 +31,9 @@ def main(input_audio, model_path, enable_diarization, enable_postprocessing):
     base_name = os.path.splitext(os.path.basename(input_audio))[0]
 
     # Определяем пути выходных файлов
-    output_transcription = os.path.join(raw_dir, f"{base_name}.docx")
-    postprocessed_output = os.path.join(postprocessed_dir, f"{base_name}_cleaned.docx")
-    diarization_output = os.path.join(diarization_dir, f"{base_name}_diarization.txt")
+    output_transcription = os.path.join(raw_dir, f"{base_name}_raw.docx")
+    postprocessed_output = os.path.join(postprocessed_dir, f"{base_name}_cleaned_final.docx")
+    diarization_output = os.path.join(diarization_dir, f"{base_name}_diarization_raw.txt")
 
     # 1. Выполняем транскрипцию
     logger.info("Этап 1: Транскрипция...")
@@ -52,13 +52,13 @@ def main(input_audio, model_path, enable_diarization, enable_postprocessing):
         perform_diarization(input_audio, diarization_output)
 
         # Устанавливаем путь для объединённого файла
-        diarization_output_merged = os.path.join(diarization_dir, f"{base_name}_diarization_merged.txt")
+        diarization_output_merged = os.path.join(diarization_dir, f"{base_name}_diarization_merged_interim.txt")
         
         logger.info("Этап 2.2: Объединение сегментов")
         process_speaker_segments(diarization_output, diarization_output_merged)
 
         # Устанавливаем путь для окончательно обработанного файла
-        diarization_output_processed = os.path.join(diarization_dir, f"{base_name}_diarization_processed.txt")
+        diarization_output_processed = os.path.join(diarization_dir, f"{base_name}_diarization_processed_final.txt")
         
         logger.info("Этап 2.3: Преобразование времени")
         convert_diarization_file(diarization_output_merged, diarization_output_processed)
