@@ -1,6 +1,7 @@
 import os.path
 from typing import Tuple, Union
 import wave
+import tempfile
 
 import numpy as np
 from pydub import AudioSegment
@@ -12,72 +13,66 @@ TARGET_SAMPLING_FREQUENCY = 16_000
 
 def load_sound(fname: str) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray], None]:
     """
-    Loads .wav audio. It should be a mono-channel or two-channel sound with a rate equal to
-    wav_io.TARGET_SAMPLING_FREQUENCY = 16_000.
+    Loads .wav audio. Automatically converts to mono, 16kHz, 16-bit PCM if needed.
 
     Returns:
     - A waveform array for mono-channel sound
     - Tuple of two waveform arrays for two-channel sound
-
-    Raises `ValueError` if wrong rate, `wave.Error` if wrong format (maybe more exceptions?).
-
-    In Pisets, this function replaces `librosa.load`, since librosa may have problems when
-    installing on Windows. Since `load_sound` requires a specific format and rate,
-    a file conversion with ffmpeg may be required.
-
-    However, you may consider using an alternative which performs automatic resampling
-    to the required rate, is able to merge channels, and support more extensions:
-    ```
-    librosa.load(filename, mono=True, sr=16_000)
-    ```
     """
-    with wave.open(fname, 'rb') as fp:
-        n_channels = fp.getnchannels()
-        if n_channels not in {1, 2}:
-            err_msg = f'"{fname}": the channels number of the WAV sound is wrong! ' \
-                      f'Expected 1 or 2, got {n_channels}.'
-            raise ValueError(err_msg)
-        fs = fp.getframerate()
-        if fs != TARGET_SAMPLING_FREQUENCY:
-            err_msg = f'"{fname}": the sampling frequency the WAV sound is wrong! ' \
-                      f'Expected {TARGET_SAMPLING_FREQUENCY} Hz, got {fs} Hz.'
-            raise ValueError(err_msg)
-        bytes_per_sample = fp.getsampwidth()
-        if bytes_per_sample not in {1, 2}:
-            err_msg = f'"{fname}": the sample width of the WAV sound is wrong! ' \
-                      f'Expected 1 or 2, got {bytes_per_sample}.'
-            raise ValueError(err_msg)
-        sound_length = fp.getnframes()
-        sound_bytes = fp.readframes(sound_length)
-    if sound_length == 0:
-        return None
-    if bytes_per_sample == 1:
-        data = np.frombuffer(sound_bytes, dtype=np.uint8)
-    else:
-        data = np.frombuffer(sound_bytes, dtype=np.int16)
-    if len(data.shape) != 1:
-        err_msg = f'"{fname}": the loaded data is wrong! Expected 1-d array, got {len(data.shape)}-d one.'
-        raise ValueError(err_msg)
-    if n_channels == 1:
-        if bytes_per_sample == 1:
-            sound = (data.astype(np.float32) - 128.0) / 128.0
-        else:
-            sound = data.astype(np.float32) / 32768.0
-    else:
-        channel1 = data[0::2]
-        channel2 = data[1::2]
-        if bytes_per_sample == 1:
-            sound = (
-                (channel1.astype(np.float32) - 128.0) / 128.0,
-                (channel2.astype(np.float32) - 128.0) / 128.0
-            )
-        else:
-            sound = (
-                channel1.astype(np.float32) / 32768.0,
-                channel2.astype(np.float32) / 32768.0
-            )
-    return sound
+    def _read_and_decode(filepath: str):
+        with wave.open(filepath, 'rb') as fp:
+            n_channels = fp.getnchannels()
+            fs = fp.getframerate()
+            bytes_per_sample = fp.getsampwidth()
+            sound_length = fp.getnframes()
+            sound_bytes = fp.readframes(sound_length)
 
+        if sound_length == 0:
+            return None
+
+        if bytes_per_sample == 1:
+            data = np.frombuffer(sound_bytes, dtype=np.uint8)
+        else:
+            data = np.frombuffer(sound_bytes, dtype=np.int16)
+
+        if len(data.shape) != 1:
+            raise ValueError(f'"{filepath}": the loaded data is wrong! Expected 1-d array, got {len(data.shape)}-d one.')
+
+        if n_channels == 1:
+            if bytes_per_sample == 1:
+                return (data.astype(np.float32) - 128.0) / 128.0
+            else:
+                return data.astype(np.float32) / 32768.0
+        else:
+            ch1 = data[0::2]
+            ch2 = data[1::2]
+            if bytes_per_sample == 1:
+                return (
+                    (ch1.astype(np.float32) - 128.0) / 128.0,
+                    (ch2.astype(np.float32) - 128.0) / 128.0,
+                )
+            else:
+                return (
+                    ch1.astype(np.float32) / 32768.0,
+                    ch2.astype(np.float32) / 32768.0,
+                )
+
+    try:
+        with wave.open(fname, 'rb') as fp:
+            n_channels = fp.getnchannels()
+            fs = fp.getframerate()
+            bytes_per_sample = fp.getsampwidth()
+
+        if n_channels in {1, 2} and fs == TARGET_SAMPLING_FREQUENCY and bytes_per_sample in {1, 2}:
+            return _read_and_decode(fname)
+        else:
+            print(f'Автоконвертация "{fname}" (channels={n_channels}, fs={fs}, width={bytes_per_sample}) → mono, 16kHz, 16-bit')
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=True) as tmp:
+                transform_to_wavpcm(fname, tmp.name)
+                return _read_and_decode(tmp.name)
+
+    except wave.Error as e:
+        raise ValueError(f'"{fname}": cannot be read as a valid WAV file. {str(e)}')
 
 def transform_to_wavpcm(src_fname: str, dst_fname: str) -> None:
     found_idx = src_fname.rfind('.')

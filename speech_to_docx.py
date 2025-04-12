@@ -86,28 +86,42 @@ def perform_transcribation():
         speech_to_srt_logger.error(err_msg)
         raise IOError(err_msg)
 
-    tmp_wav_name = ''
-    try:
-        with tempfile.NamedTemporaryFile(mode='wb', delete=False, suffix='.wav') as fp:
-            tmp_wav_name = fp.name
+    # Определяем, является ли входной файл WAV (по расширению)
+    is_wav = audio_fname.lower().endswith('.wav')
+
+    if not is_wav:
+        # Если файл не WAV, то создаём временный WAV-файл и конвертируем
+        tmp_wav_name = ''
         try:
-            transform_to_wavpcm(audio_fname, tmp_wav_name)
+            with tempfile.NamedTemporaryFile(mode='wb', delete=False, suffix='.wav') as fp:
+                tmp_wav_name = fp.name
+            try:
+                transform_to_wavpcm(audio_fname, tmp_wav_name)
+            except BaseException as ex:
+                err_msg = str(ex)
+                speech_to_srt_logger.error(err_msg)
+                raise
+            speech_to_srt_logger.info(f'The sound "{audio_fname}" is converted to "{tmp_wav_name}".')
+            try:
+                input_sound = load_sound(tmp_wav_name)
+            except BaseException as ex:
+                err_msg = str(ex)
+                speech_to_srt_logger.error(err_msg)
+                raise
+            speech_to_srt_logger.info(f'The sound from "{tmp_wav_name}" is loaded.')
+        finally:
+            if os.path.isfile(tmp_wav_name):
+                os.remove(tmp_wav_name)
+                speech_to_srt_logger.info(f'Temporary file "{tmp_wav_name}" is removed.')
+    else:
+        # Если файл уже WAV, передаём его напрямую в load_sound
+        speech_to_srt_logger.info(f'The input file "{audio_fname}" is WAV; loading it directly.')
+        try:
+            input_sound = load_sound(audio_fname)
         except BaseException as ex:
             err_msg = str(ex)
             speech_to_srt_logger.error(err_msg)
             raise
-        speech_to_srt_logger.info(f'The sound "{audio_fname}" is converted to the "{tmp_wav_name}".')
-        try:
-            input_sound = load_sound(tmp_wav_name)
-        except BaseException as ex:
-            err_msg = str(ex)
-            speech_to_srt_logger.error(err_msg)
-            raise
-        speech_to_srt_logger.info(f'The sound is "{tmp_wav_name}" is loaded.')
-    finally:
-        if os.path.isfile(tmp_wav_name):
-            os.remove(tmp_wav_name)
-            speech_to_srt_logger.info(f'The sound is "{tmp_wav_name}" is removed.')
 
     if input_sound is None:
         speech_to_srt_logger.info(f'The sound "{audio_fname}" is empty.')
