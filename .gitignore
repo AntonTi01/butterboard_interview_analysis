@@ -138,10 +138,14 @@ dmypy.json
 data/*.mp3
 data/*.wav
 
+# Игнорируем всё в results
+results/
+
 # Игнорируем все .docx и .srt файлы в results/raw и results/postprocessed
 results/raw/*.docx
 results/raw/*.srt
 results/raw/*.txt
+
 results/postprocessed/*.docx
 results/postprocessed/*.srt
 results/postprocessed/*.txt
@@ -149,5 +153,8 @@ results/postprocessed/*.txt
 results/diarization/*.docx
 results/diarization/*.srt
 results/diarization/*.txt
+
 # Игнорируем все модели
 models/
+
+.DS_Store
