@@ -1,0 +1,11 @@
+1. f8d1k2uo7dm604dg57f1
+2. f8df60s7mk10qqpnjn4i
+3. f8dtck21q90s6dq70l7u
+4. f8d2oidtte379hkjmjiv
+5. f8dhoiae4c8i4f20um55
+6. f8dljmv5tdbah9svbj2m
+7. f8den4fnpppeof30rqqd
+8. f8dp66oudqr7bc32pf0d
+
+
+python extract_final_texts.py results/recognition_result_8_interview.json --output results/filtered/recognition_result_8_interview_filtered.json

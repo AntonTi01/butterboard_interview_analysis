@@ -160,3 +160,4 @@ models/
 .DS_Store
 
 speech_recognition_validation/results
+speech_recognition_validation/cloudapi/
