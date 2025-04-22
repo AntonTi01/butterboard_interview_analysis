@@ -158,3 +158,5 @@ results/diarization/*.txt
 models/
 
 .DS_Store
+
+speech_recognition_validation/results
